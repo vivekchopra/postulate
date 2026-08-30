@@ -1,0 +1,68 @@
+feature: late_fee_calculation
+owner: billing
+risk: high
+
+contract:
+  preconditions:
+    - invoice.amount_cents >= 0
+    - invoice.due_date is a valid ISO date string (YYYY-MM-DD)
+    - today is a valid ISO date string (YYYY-MM-DD)
+  postconditions:
+    - fee_cents >= 0
+    - fee_cents == 0 when today <= invoice.due_date
+    - fee_cents == round(amount_cents * 0.015 * full_months_overdue) when today > due_date
+    - fee_cents <= invoice.amount_cents
+    - same input returns same output
+  failure_cases:
+    - missing or empty invoice.due_date raises a validation error
+    - negative invoice.amount_cents raises a validation error
+    - malformed date string raises a validation error
+
+invariants:
+  - does_not_mutate_input
+  - deterministic_for_same_input
+  - fee_never_exceeds_principal
+
+bdd:
+  - name: no_fee_before_due_date
+    given:
+      amount_cents: 10000
+      due_date: "2026-05-31"
+    when:
+      today: "2026-05-21"
+    then:
+      fee_cents: 0
+  - name: no_fee_on_due_date
+    given:
+      amount_cents: 10000
+      due_date: "2026-05-31"
+    when:
+      today: "2026-05-31"
+    then:
+      fee_cents: 0
+  - name: one_month_overdue
+    given:
+      amount_cents: 10000
+      due_date: "2026-04-01"
+    when:
+      today: "2026-05-01"
+    then:
+      fee_cents: 150
+
+policies:
+  - no_network_calls
+  - no_db_writes
+
+test_mapping:
+  no_fee_before_due_date: "lateFee.test.ts > no_fee_before_due_date"
+  no_fee_on_due_date: "lateFee.test.ts > no_fee_on_due_date"
+  one_month_overdue: "lateFee.test.ts > one_month_overdue"
+  does_not_mutate_input: "lateFee.test.ts > does_not_mutate_input"
+  deterministic_for_same_input: "lateFee.test.ts > deterministic_for_same_input"
+  fee_never_exceeds_principal: "lateFee.test.ts > fee_never_exceeds_principal"
+
+correctness_argument: |
+  Before or on the due date, the implementation returns 0 directly without computing months.
+  After the due date, fee_cents = round(amount_cents * 0.015 * full_months) where full_months
+  counts whole calendar months elapsed since due_date. The result is clamped to amount_cents
+  so the fee never exceeds the principal. Inputs are read but never mutated.

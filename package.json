@@ -1,0 +1,59 @@
+{
+  "name": "postulate",
+  "version": "0.1.0",
+  "description": "A framework for specifying and validating software behavior in AI-assisted development.",
+  "author": "Vivek Chopra",
+  "license": "MIT",
+  "homepage": "https://github.com/krilldev/postulate",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/krilldev/postulate.git"
+  },
+  "bugs": {
+    "url": "https://github.com/krilldev/postulate/issues"
+  },
+  "keywords": [
+    "ai",
+    "llm",
+    "testing",
+    "verification",
+    "contracts",
+    "bdd",
+    "invariants",
+    "guardrails",
+    "specification",
+    "typescript",
+    "ci",
+    "developer-tools"
+  ],
+  "type": "module",
+  "bin": {
+    "postulate": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "files": [
+    "dist",
+    "schemas"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "test": "vitest run",
+    "postulate": "node dist/index.js"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "picocolors": "^1.1.0",
+    "yaml": "^2.6.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

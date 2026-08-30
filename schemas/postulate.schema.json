@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Postulate Spec",
+  "type": "object",
+  "required": ["feature", "contract", "bdd"],
+  "properties": {
+    "feature": { "type": "string" },
+    "owner": { "type": "string" },
+    "risk": {
+      "enum": ["low", "medium", "high", "critical"],
+      "default": "medium"
+    },
+    "contract": {
+      "type": "object",
+      "required": ["preconditions", "postconditions"],
+      "properties": {
+        "preconditions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "postconditions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "failure_cases": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "invariants": { "type": "array", "items": { "type": "string" } },
+    "bdd": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "then"],
+        "properties": {
+          "name": { "type": "string" },
+          "given": { "type": "object" },
+          "when": { "type": "object" },
+          "then": { "type": "object" }
+        }
+      }
+    },
+    "policies": { "type": "array", "items": { "type": "string" } },
+    "test_mapping": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "correctness_argument": { "type": "string" }
+  }
+}
