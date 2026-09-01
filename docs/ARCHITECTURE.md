@@ -134,3 +134,7 @@ The current test suite verifies Postulate's own parser, checker, prompt generati
 - `ROADMAP.md`: future product direction.
 
 When code changes the current architecture, update this file in the same branch. Do not put future architecture or rejected alternatives here.
+
+## Approved extension (not yet shipped)
+
+The Python adapter is approved but not merged until [Milestone A](./plans/python-adapter/ACCEPTANCE.md) passes. Target layout and commands: [`plans/python-adapter/PLAN.md`](./plans/python-adapter/PLAN.md). After Milestone A ships, replace this section with an updated component diagram that includes `adapters/python/`.

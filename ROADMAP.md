@@ -2,6 +2,12 @@
 
 Planned features. Sequencing lives in [docs/PLAN.md](./docs/PLAN.md); checkboxes and Cursor task prompts live in [docs/TASKS.md](./docs/TASKS.md). Locked design choices live in [docs/adr/](./docs/adr/README.md).
 
+## Python adapter (in progress)
+
+Native Python package (`pip install postulate`) with CLI parity, `verify` (pytest collection resolves `test_mapping`), pytest plugin for exercised mappings, and `diff --git`. First consumer: webcheck-api.
+
+Plan: [docs/plans/python-adapter/](./docs/plans/python-adapter/PLAN.md). ADRs: [0014](./docs/adr/0014-python-adapter-package.md)–[0018](./docs/adr/0018-pytest-plugin-exercised-mapping.md).
+
 ## Property tests from named invariants
 
 Named invariants such as `does_not_mutate_input` should generate property tests automatically.
@@ -22,7 +28,9 @@ The goal is for policy violations to fail CI before code is merged or deployed.
 
 Compare declared invariants and BDD scenarios against the tests that actually ran.
 
-The goal is to catch cases where a behavior exists in the spec but is no longer exercised by the test suite.
+**Partially addressed by the Python adapter** ([pytest plugin](./docs/plans/python-adapter/SPEC.md), ADR [0018](./docs/adr/0018-pytest-plugin-exercised-mapping.md)): spec-to-test exercise, not line coverage.
+
+Remaining: generalize beyond pytest; optional integration with coverage.py later.
 
 ## Architectural drift detection
 
@@ -32,10 +40,10 @@ Compare the current codebase against structural expectations declared in the spe
 
 `postulate diff` currently compares two file paths.
 
-A future version will diff directly against `HEAD~1` or another git reference so CI jobs do not need a manual checkout of the previous spec.
+**Planned in Python adapter Milestone B** ([ADR 0017](./docs/adr/0017-git-aware-diff.md)): `postulate diff --git <ref> <spec-file>`.
 
 ## Multi-language adapters
 
 The spec format is plain YAML, so any language can produce one.
 
-The current implementation is TypeScript-first. The long-term plan is to keep the spec format language-neutral while adding language-specific adapters (for Python, Ruby, Go, Rust, and others) for test discovery, test generation, and policy checks.
+The current implementation is TypeScript-first. **Python is the first adapter** ([ADR 0014](./docs/adr/0014-python-adapter-package.md)). Ruby, Go, Rust, and others follow the same pattern after Python Milestones A–B land.

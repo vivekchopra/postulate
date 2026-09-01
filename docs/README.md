@@ -9,6 +9,7 @@ Postulate separates current architecture, durable design decisions, change-speci
 | [`PLAN.md`](PLAN.md) | Project-level build order; not a change-specific implementation plan |
 | [`TASKS.md`](TASKS.md) | Index of shipped, current, and future work |
 | [`plans/`](plans/) | Change-specific plans, specs, tasks, acceptance criteria, and agent prompts |
+| [`plans/python-adapter/`](plans/python-adapter/PLAN.md) | **Current:** Python adapter + pytest integration (webcheck-api pilot) |
 | [`adr/`](adr/README.md) | Architecture Decision Records: why durable design choices were made |
 | [`adr/template.md`](adr/template.md) | Copy this when recording a new decision |
 | [`framework.md`](framework.md) | Short layer overview of the Postulate workflow |
@@ -36,4 +37,4 @@ plans/<change>/
 
 The root [`ROADMAP.md`](../ROADMAP.md) remains the public planned-feature list.
 
-New locked design changes belong in `docs/adr/` using the next available ADR id.
+New locked design changes belong in `docs/adr/` using the next available ADR id (**0019** for policy pack).

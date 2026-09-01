@@ -20,6 +20,11 @@ ADRs are an append-only log of design choices. One decision per file. Never dele
 | [0011](0011-risk-based-rules.md) | Risk drives required invariants and correctness argument | Accepted |
 | [0012](0012-prompt-constrains-codegen.md) | Prompt constrains codegen; CLI does not call a model | Accepted |
 | [0013](0013-warnings-opt-in-ci.md) | Warnings fail CI only with --fail-on-warnings | Accepted |
+| [0014](0014-python-adapter-package.md) | Python adapter as a first-class PyPI package | Accepted |
+| [0015](0015-pytest-test-mapping-locator.md) | Pytest locator grammar for test_mapping | Accepted |
+| [0016](0016-verify-command.md) | verify command for mapped-test existence | Accepted |
+| [0017](0017-git-aware-diff.md) | Git-aware spec diff | Accepted |
+| [0018](0018-pytest-plugin-exercised-mapping.md) | Pytest plugin for exercised spec mapping | Accepted |
 
 ## Conventions
 

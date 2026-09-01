@@ -14,25 +14,24 @@ Phases 0-7 of the original v0.1 build are complete:
 - [x] spec diff
 - [x] known-invariant registry
 - [x] worked TypeScript example and repository CI
+- [x] test and schema hardening: [`plans/test-hardening/`](plans/test-hardening/)
 
 ## Current
 
-- [ ] Test and schema hardening: [`plans/test-hardening/TASKS.md`](plans/test-hardening/TASKS.md)
+- [ ] Python adapter (pytest integration): [`plans/python-adapter/TASKS.md`](plans/python-adapter/TASKS.md)
 
-The acceptance criteria for this work are intentionally separate: [`plans/test-hardening/ACCEPTANCE.md`](plans/test-hardening/ACCEPTANCE.md).
+Acceptance: [`plans/python-adapter/ACCEPTANCE.md`](plans/python-adapter/ACCEPTANCE.md). ADRs: [0014](adr/0014-python-adapter-package.md)–[0018](adr/0018-pytest-plugin-exercised-mapping.md).
 
 ## Planned
 
 The product roadmap remains in [`ROADMAP.md`](../ROADMAP.md). Create a plan folder before implementing a substantial roadmap item.
 
-Current roadmap sequence after hardening:
+After the Python adapter (Milestones A–B):
 
+- [ ] policy enforcement (partially scoped in python-adapter Milestone C)
 - [ ] property tests from named invariants
-- [ ] policy enforcement
-- [ ] coverage measurement
 - [ ] architectural drift detection
-- [ ] git-aware diff
-- [ ] multi-language adapters
+- [ ] additional language adapters (Ruby, Go, Rust, …)
 
 ## Operating rules for coding agents
 
