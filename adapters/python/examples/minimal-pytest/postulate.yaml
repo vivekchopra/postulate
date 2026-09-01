@@ -1,0 +1,24 @@
+feature: minimal_example
+risk: medium
+contract:
+  preconditions:
+    - value is non-negative
+    - increment is positive
+    - inputs are integers
+  postconditions:
+    - result is greater than value
+  failure_cases: []
+invariants:
+  - deterministic_output
+bdd:
+  - name: example_case
+    given:
+      value: 1
+      increment: 1
+    when: {}
+    then:
+      result: 2
+policies: []
+test_mapping:
+  example_case: tests/test_example.py::test_example_case
+  deterministic_output: tests/test_example.py::test_deterministic_output

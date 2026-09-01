@@ -4,11 +4,20 @@ This document describes the system as it exists today. It is not a roadmap and i
 
 ## System boundary
 
-Postulate is a TypeScript CLI that loads a YAML specification, validates its shape, applies structural checks, generates an LLM implementation prompt, and compares two specifications for regressions.
+Postulate loads YAML specifications, validates their shape, applies structural checks, generates LLM implementation prompts, compares specifications for regressions, and (Python) resolves `test_mapping` locators against pytest collection.
 
-It does not call an LLM, execute contract expressions, inspect mapped test files, enforce declared policies, prove correctness, or run a user's test suite.
+It does not call an LLM, execute contract expressions, run mapped tests, enforce declared policies, prove correctness, or replace a user's test runner.
 
-## Current components
+## Implementations
+
+| Surface | Location | Commands |
+| --- | --- | --- |
+| TypeScript CLI (reference) | `src/` | `check`, `prompt`, `ci`, `diff` |
+| Python adapter (PyPI `postulate`) | `adapters/python/` | `check`, `prompt`, `ci`, `diff`, **`verify`** |
+
+Both implementations share the same YAML contract ([`docs/SPEC.md`](SPEC.md)). Parity tests use fixtures under `adapters/fixtures/specs/`.
+
+## TypeScript components
 
 ```text
                          +-------------------+
@@ -39,7 +48,37 @@ It does not call an LLM, execute contract expressions, inspect mapped test files
                            +---------------+
 ```
 
-## Responsibilities
+## Python components
+
+```text
+                         +-------------------+
+                         |  postulate (CLI)  |
+                         |  adapters/python  |
+                         +---------+---------+
+                                   |
+        +--------------------------+---------------------------+
+        |                          |                           |
+        v                          v                           v
+ +-------------+           +-------------+            +----------------+
+ |  load_spec  |           | check_spec  |            |  verify_spec   |
+ | models.py   |           |  check.py   |            |   verify.py    |
+ +-------------+           +-------------+            +--------+-------+
+        |                          |                            |
+        v                          v                            v
+ +-------------+           +-------------+            pytest --collect-only
+ | PostulateSpec|          | diff/prompt |            (node ID resolution)
+ +-------------+           +-------------+
+```
+
+### `adapters/python/src/postulate/cli.py`
+
+CLI entry with the same exit semantics as TypeScript for shared commands. `verify` exits `2` on load or pytest collection failure.
+
+### `adapters/python/src/postulate/verify.py`
+
+Runs structural checks, collects pytest node IDs from `--project-root`, and resolves `test_mapping` locators ([ADR 0015](adr/0015-pytest-test-mapping-locator.md), [ADR 0016](adr/0016-verify-command.md)).
+
+## Responsibilities (TypeScript)
 
 ### `src/index.ts`
 
@@ -50,7 +89,7 @@ Owns the CLI surface and process exit behavior for:
 - `ci <spec-file> [--fail-on-warnings]`
 - `diff <before> <after>`
 
-It delegates parsing and domain logic to the modules below. Load failures exit `2`; failed checks or regressions exit `1`.
+Load failures exit `2`; failed checks or regressions exit `1`.
 
 ### `src/spec.ts`
 
@@ -60,81 +99,65 @@ The Zod schema is the runtime source of truth. `schemas/postulate.schema.json` m
 
 ### `src/loadSpec.ts`
 
-Owns the filesystem and YAML parsing boundary. It:
-
-1. resolves and reads a spec file;
-2. parses YAML;
-3. validates the parsed value with `PostulateSchema`;
-4. converts expected load/validation failures into `SpecLoadError` with readable paths.
+Owns the filesystem and YAML parsing boundary.
 
 ### `src/check.ts`
 
-Applies the current structural checks to an already-loaded `PostulateSpec` and returns errors, warnings, and informational diagnostics.
-
-It does not evaluate predicates contained in contract strings and does not open files named in `test_mapping`.
+Applies structural checks. Does not open files named in `test_mapping`.
 
 ### `src/invariants.ts`
 
-Contains the small registry of invariant names Postulate recognizes today. Recognition is informational only; known invariants do not yet have executable semantics.
+Known invariant name registry (informational).
 
 ### `src/prompt.ts`
 
-Renders a loaded spec into a text prompt for an external coding agent. It does not invoke a model.
+Renders a codegen prompt. Does not invoke a model.
 
 ### `src/diff.ts`
 
-Compares two loaded specifications and reports the structural regression/improvement classes supported by v0.1, including dropped invariants, removed postconditions, removed scenarios, removed policies, and risk changes.
+Compares two loaded specifications for structural regressions and improvements.
 
 ## Data flow
 
 ### Check / CI
 
 ```text
-YAML file
-   -> loadSpec
-   -> PostulateSchema
-   -> checkSpec
-   -> diagnostics
-   -> CLI exit code
+YAML file -> load -> schema validation -> check_spec -> diagnostics -> exit code
+```
+
+### Verify (Python only)
+
+```text
+YAML file -> load -> check_spec -> pytest --collect-only -> resolve test_mapping -> exit code
 ```
 
 ### Prompt
 
 ```text
-YAML file
-   -> loadSpec
-   -> PostulateSchema
-   -> buildCodegenPrompt
-   -> stdout
+YAML file -> load -> build_codegen_prompt -> stdout
 ```
 
 ### Diff
 
 ```text
-before YAML -> loadSpec --+
-                         +-> diffSpecs -> regressions/improvements -> exit code
-after YAML  -> loadSpec --+
+before YAML -> load --+
+                      +-> diff_specs -> regressions/improvements -> exit code
+after YAML  -> load --+
 ```
 
 ## Test boundary
 
-Unit tests live in `tests/`. The worked example under `examples/ts-late-fee/` demonstrates a consumer specification, implementation, and mapped tests.
+- TypeScript: `tests/` plus `examples/ts-late-fee/`
+- Python: `adapters/python/tests/` plus `adapters/python/examples/minimal-pytest/`
+- Shared parity fixtures: `adapters/fixtures/specs/`
 
-The current test suite verifies Postulate's own parser, checker, prompt generation, diff behavior, CLI exit semantics, and JSON Schema mirror. It does not use external services or make network calls.
+No external services or network calls in unit tests.
 
 ## Documentation lifecycle
 
 - `ARCHITECTURE.md`: what the system looks like now.
 - `adr/`: why durable design decisions were made.
-- `plans/<change>/PLAN.md`: scope and approach for one change.
-- `plans/<change>/SPEC.md`: requirements specific to that change.
-- `plans/<change>/TASKS.md`: verifiable implementation steps.
-- `plans/<change>/ACCEPTANCE.md`: definition of done, written before implementation.
-- `plans/<change>/CURSOR_PROMPTS.md`: bounded prompts used to execute the plan.
+- `plans/<change>/`: scoped implementation plans.
 - `ROADMAP.md`: future product direction.
 
-When code changes the current architecture, update this file in the same branch. Do not put future architecture or rejected alternatives here.
-
-## Approved extension (not yet shipped)
-
-The Python adapter is approved but not merged until [Milestone A](./plans/python-adapter/ACCEPTANCE.md) passes. Target layout and commands: [`plans/python-adapter/PLAN.md`](./plans/python-adapter/PLAN.md). After Milestone A ships, replace this section with an updated component diagram that includes `adapters/python/`.
+When code changes the current architecture, update this file in the same branch.

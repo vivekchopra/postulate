@@ -10,43 +10,43 @@ Read ADRs [0014](../../adr/0014-python-adapter-package.md)–[0018](../../adr/00
 
 ### A1. Package scaffold
 
-- [ ] Create `adapters/python/pyproject.toml` with `postulate` package and `postulate` console script
-- [ ] Create `src/postulate/` modules: `models`, `load_spec`, `check`, `diff`, `prompt`, `invariants`, `cli`
-- [ ] Add `adapters/python/tests/` with pytest configuration
-- [ ] Confirm Python `>=3.11` matches webcheck-api
+- [x] Create `adapters/python/pyproject.toml` with `postulate` package and `postulate` console script
+- [x] Create `src/postulate/` modules: `models`, `load_spec`, `check`, `diff`, `prompt`, `invariants`, `cli`
+- [x] Add `adapters/python/tests/` with pytest configuration
+- [x] Confirm Python `>=3.11` matches webcheck-api
 
 ### A2. Spec load + models
 
-- [ ] Pydantic `PostulateSpec` mirroring Zod `PostulateSchema`
-- [ ] `load_spec(path) -> PostulateSpec` with `SpecLoadError` and field paths on validation failure
-- [ ] Tests: valid YAML, missing file, malformed YAML, schema error path
+- [x] Pydantic `PostulateSpec` mirroring Zod `PostulateSchema`
+- [x] `load_spec(path) -> PostulateSpec` with `SpecLoadError` and field paths on validation failure
+- [x] Tests: valid YAML, missing file, malformed YAML, schema error path
 
 ### A3. Structural check + CI
 
-- [ ] Port `check_spec` rules from `src/check.ts`
-- [ ] Port `print_check_result` with matching prefixes
-- [ ] Wire `postulate check` and `postulate ci --fail-on-warnings`
-- [ ] Tests: parity against shared fixtures (copy or symlink from `adapters/fixtures/specs/`)
+- [x] Port `check_spec` rules from `src/check.ts`
+- [x] Port `print_check_result` with matching prefixes
+- [x] Wire `postulate check` and `postulate ci --fail-on-warnings`
+- [x] Tests: parity against shared fixtures (copy or symlink from `adapters/fixtures/specs/`)
 
 ### A4. Prompt + diff
 
-- [ ] Port `build_codegen_prompt` (section presence tests)
-- [ ] Port `diff_specs` and two-file `postulate diff`
-- [ ] Tests: regression/improvement classes match TS `tests/diff.test.ts` scenarios
+- [x] Port `build_codegen_prompt` (section presence tests)
+- [x] Port `diff_specs` and two-file `postulate diff`
+- [x] Tests: regression/improvement classes match TS `tests/diff.test.ts` scenarios
 
 ### A5. verify command
 
-- [ ] Implement pytest collection parser for node IDs
-- [ ] Implement locator resolution per [0015](../../adr/0015-pytest-test-mapping-locator.md)
-- [ ] Wire `postulate verify <spec> [--project-root] [--fail-on-warnings]`
-- [ ] Tests: fake pytest output fixtures (no dependency on webcheck-api)
-- [ ] Tests: integration with a tiny sample project under `adapters/python/examples/minimal-pytest/`
+- [x] Implement pytest collection parser for node IDs
+- [x] Implement locator resolution per [0015](../../adr/0015-pytest-test-mapping-locator.md)
+- [x] Wire `postulate verify <spec> [--project-root] [--fail-on-warnings]`
+- [x] Tests: fake pytest output fixtures (no dependency on webcheck-api)
+- [x] Tests: integration with a tiny sample project under `adapters/python/examples/minimal-pytest/`
 
 ### A6. Documentation + packaging
 
-- [ ] `adapters/python/README.md` with install and command examples
-- [ ] Update root `docs/ARCHITECTURE.md` when A merges (current state includes Python adapter)
-- [ ] Add parity job to Postulate CI (run TS + Python tests)
+- [x] `adapters/python/README.md` with install and command examples
+- [x] Update root `docs/ARCHITECTURE.md` when A merges (current state includes Python adapter)
+- [x] Add parity job to Postulate CI (run TS + Python tests)
 - [ ] Prepare PyPI publish workflow (can be manual first publish)
 
 ### Cursor prompt
@@ -136,7 +136,7 @@ Tracked here for sequencing; implemented in **webcheck-api**, not postulate.
 
 | Milestone | Status |
 | --- | --- |
-| A — Python CLI + verify | **Next** |
-| B — Git diff + pytest plugin | Planned |
+| A — Python CLI + verify | **Complete** (PyPI workflow pending) |
+| B — Git diff + pytest plugin | **Next** |
 | C — Policies + init | Planned |
 | D — webcheck pilot | Planned (consumer repo) |

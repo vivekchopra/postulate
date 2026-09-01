@@ -1,0 +1,19 @@
+feature: parity_base
+owner: test
+risk: medium
+contract:
+  preconditions:
+    - input exists
+  postconditions:
+    - output exists
+  failure_cases: []
+invariants: []
+bdd:
+  - name: example_scenario
+    given: {}
+    when: {}
+    then:
+      result: true
+policies: []
+test_mapping:
+  example_scenario: examples.test.ts > example

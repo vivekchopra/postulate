@@ -3,7 +3,7 @@ name: Postulate
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, master]
 
 jobs:
   postulate:
@@ -19,3 +19,20 @@ jobs:
       - run: npm test
       - name: Run postulate ci against the example
         run: node dist/index.js ci examples/ts-late-fee/postulate.yaml
+
+  python-adapter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Python adapter
+        run: pip install -e "./adapters/python[dev]"
+      - name: Run Python adapter tests
+        run: pytest adapters/python/tests
+      - name: Verify minimal pytest example
+        working-directory: adapters/python/examples/minimal-pytest
+        run: |
+          postulate check postulate.yaml
+          postulate verify postulate.yaml --project-root .

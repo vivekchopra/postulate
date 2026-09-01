@@ -1,0 +1,47 @@
+# Postulate Python adapter
+
+Native Python CLI for Postulate specs. Matches the TypeScript reference for `check`, `ci`, `prompt`, `diff`, and adds `verify` for pytest `test_mapping` resolution.
+
+## Install
+
+```bash
+cd adapters/python
+pip install -e ".[dev]"
+```
+
+## Commands
+
+```bash
+postulate check path/to/postulate.yaml
+postulate ci path/to/postulate.yaml --fail-on-warnings
+postulate prompt path/to/postulate.yaml
+postulate diff before.yaml after.yaml
+postulate verify path/to/postulate.yaml --project-root .
+```
+
+### test_mapping locators
+
+Use pytest node IDs relative to `--project-root`:
+
+```text
+tests/test_example.py::test_example_case
+```
+
+## Minimal example
+
+```bash
+cd examples/minimal-pytest
+pip install -e "../..[dev]"
+postulate check postulate.yaml
+postulate verify postulate.yaml --project-root .
+```
+
+## Tests
+
+```bash
+pytest
+```
+
+## Plan
+
+Implementation tracked in [`docs/plans/python-adapter/`](../../docs/plans/python-adapter/PLAN.md).
