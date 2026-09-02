@@ -32,3 +32,6 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+markers = [
+    "p0_regression: P0 pytest coverage regressions; expected to fail until P1/P2",
+]
