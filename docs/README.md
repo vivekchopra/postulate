@@ -37,4 +37,4 @@ plans/<change>/
 
 The root [`ROADMAP.md`](../ROADMAP.md) remains the public planned-feature list.
 
-New locked design changes belong in `docs/adr/` using the next available ADR id (**0019** for policy pack).
+New locked design changes belong in `docs/adr/` using the next available ADR id (**0020**).
