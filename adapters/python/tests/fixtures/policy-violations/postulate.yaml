@@ -1,0 +1,20 @@
+feature: policy_fixture
+risk: medium
+contract:
+  preconditions:
+    - inputs are valid
+    - system is configured
+    - tests run offline
+  postconditions:
+    - no network calls in unit tests
+policies:
+  - unit_tests_stay_offline
+  - no_secrets_in_output
+invariants: []
+bdd:
+  - name: placeholder
+    given: {}
+    when: {}
+    then:
+      ok: true
+test_mapping: {}

@@ -1,6 +1,6 @@
 # Postulate Python adapter
 
-Native Python CLI for Postulate specs. Matches the TypeScript reference for `check`, `ci`, `prompt`, `diff`, and adds `verify` for pytest `test_mapping` resolution.
+Native Python CLI for Postulate specs. Matches the TypeScript reference for `check`, `ci`, `prompt`, `diff`, and adds `verify` for pytest `test_mapping` resolution, `policies check` for declared policy heuristics, and `init` for scaffolding new specs.
 
 ## Install
 
@@ -18,8 +18,20 @@ postulate prompt path/to/postulate.yaml
 postulate diff before.yaml after.yaml
 postulate diff --git HEAD~1 path/to/postulate.yaml
 postulate verify path/to/postulate.yaml --project-root .
+postulate policies check path/to/postulate.yaml --project-root .
+postulate init --output specs/feature/postulate.yaml [--tests tests/test_feature.py]
 pytest --postulate-spec path/to/postulate.yaml
 ```
+
+### Policy pack (Milestone C)
+
+When a spec declares `unit_tests_stay_offline` or `no_secrets_in_output`, run:
+
+```bash
+postulate policies check specs/safety/postulate.yaml --project-root .
+```
+
+Violations are warnings by default. Use `--fail-on-warnings` in CI to promote them to errors. Heuristics may produce false positives (documented in [ADR 0019](../../docs/adr/0019-policy-pack-heuristics.md)).
 
 ### test_mapping locators
 

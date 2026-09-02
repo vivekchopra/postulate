@@ -92,43 +92,43 @@ See [`CURSOR_PROMPTS.md`](CURSOR_PROMPTS.md) § Milestone B.
 
 ### C1. Policy ADR
 
-- [ ] Write ADR 0019 for policy rule definitions and severity
+- [x] Write ADR 0019 for policy rule definitions and severity
 
 ### C2. Policy enforcement
 
-- [ ] `unit_tests_stay_offline` heuristic for `tests/`
-- [ ] `no_secrets_in_output` heuristic
-- [ ] `postulate policies check` (or documented equivalent)
-- [ ] Tests with intentional violations in fixture tree
+- [x] `unit_tests_stay_offline` heuristic for `tests/`
+- [x] `no_secrets_in_output` heuristic
+- [x] `postulate policies check` (or documented equivalent)
+- [x] Tests with intentional violations in fixture tree
 
 ### C3. init scaffold
 
-- [ ] `postulate init --output ... [--tests ...]`
-- [ ] Tests: creates file, suggests mappings from collection
+- [x] `postulate init --output ... [--tests ...]`
+- [x] Tests: creates file, suggests mappings from collection
 
 ---
 
-## Milestone D — webcheck-api pilot (consumer repo)
+## Milestone D — webcheck-api pilot (consumer repo) — **Skipped**
 
-Tracked here for sequencing; implemented in **webcheck-api**, not postulate.
+Tracked here for sequencing; implemented in **webcheck-api**, not postulate. **Cancelled** for this plan — consumer pilot deferred to a separate webcheck-api effort.
 
 ### D1. Safety spec
 
-- [ ] Add `specs/safety/postulate.yaml` covering normalize/sanitize/assert_safe_target invariants
-- [ ] Map to existing tests in `tests/test_safety.py`
-- [ ] `postulate verify` in CI
+- [x] ~~Add `specs/safety/postulate.yaml` covering normalize/sanitize/assert_safe_target invariants~~ (skipped)
+- [x] ~~Map to existing tests in `tests/test_safety.py`~~ (skipped)
+- [x] ~~`postulate verify` in CI~~ (skipped)
 
 ### D2. pytest plugin in CI
 
-- [ ] `pytest --postulate-spec specs/safety/postulate.yaml` in CI or `scripts/smoke.sh`
+- [x] ~~`pytest --postulate-spec specs/safety/postulate.yaml` in CI or `scripts/smoke.sh`~~ (skipped)
 
 ### D3. Second spec (stretch)
 
-- [ ] `specs/free_scans/postulate.yaml` + mappings to `tests/test_free_scans_api.py`
+- [x] ~~`specs/free_scans/postulate.yaml` + mappings to `tests/test_free_scans_api.py`~~ (skipped)
 
 ### D4. PR template
 
-- [ ] Note spec changes and `postulate diff --git` output in webcheck PR checklist (optional)
+- [x] ~~Note spec changes and `postulate diff --git` output in webcheck PR checklist (optional)~~ (skipped)
 
 ---
 
@@ -138,5 +138,5 @@ Tracked here for sequencing; implemented in **webcheck-api**, not postulate.
 | --- | --- |
 | A — Python CLI + verify | **Complete** (PyPI workflow pending) |
 | B — Git diff + pytest plugin | **Complete** |
-| C — Policies + init | Planned |
-| D — webcheck pilot | Planned (consumer repo) |
+| C — Policies + init | **Complete** |
+| D — webcheck pilot | **Skipped** (consumer repo; deferred) |

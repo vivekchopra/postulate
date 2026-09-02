@@ -9,7 +9,13 @@ import typer
 from postulate.check import check_spec, print_check_result
 from postulate.diff import diff_specs, print_diff_result
 from postulate.git_diff import GitDiffError, diff_specs_against_git_ref
+from postulate.init_cmd import InitError, init_spec
 from postulate.load_spec import SpecLoadError, load_spec
+from postulate.policies import (
+    apply_fail_on_warnings,
+    check_policies,
+    print_policy_check_result,
+)
 from postulate.prompt import build_codegen_prompt
 from postulate.verify import print_verify_result, verify_spec
 
@@ -109,6 +115,66 @@ def diff_command(
     ok = print_diff_result(result)
     if not ok:
         raise typer.Exit(code=1)
+
+
+policies_app = typer.Typer(
+    help="Policy enforcement heuristics.",
+    add_completion=False,
+    no_args_is_help=True,
+)
+app.add_typer(policies_app, name="policies")
+
+
+@policies_app.command("check")
+def policies_check_command(
+    spec_file: Path,
+    project_root: Path = typer.Option(
+        Path("."),
+        "--project-root",
+        help="Project root containing tests/.",
+    ),
+    fail_on_warnings: bool = typer.Option(
+        False,
+        "--fail-on-warnings",
+        help="Exit non-zero if any policy warnings are reported.",
+    ),
+) -> None:
+    """Check declared policies against project test code."""
+    spec = _safe_load(spec_file)
+    result = check_policies(spec, project_root.resolve())
+    if fail_on_warnings:
+        result = apply_fail_on_warnings(result)
+    print_policy_check_result(result)
+    if not result.ok:
+        raise typer.Exit(code=1)
+
+
+@app.command("init")
+def init_command(
+    output: Path = typer.Option(
+        ...,
+        "--output",
+        help="Path for the new postulate.yaml file.",
+    ),
+    tests: Optional[list[str]] = typer.Option(
+        None,
+        "--tests",
+        help="Test file(s) to suggest test_mapping entries from.",
+    ),
+    project_root: Path = typer.Option(
+        Path("."),
+        "--project-root",
+        help="Project root for pytest collection when using --tests.",
+    ),
+) -> None:
+    """Create a skeleton Postulate spec."""
+    try:
+        created = init_spec(output, project_root.resolve(), tests)
+    except InitError as err:
+        typer.secho(str(err), fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=2) from err
+
+    typer.echo(f"Created {created}")
 
 
 @app.command("verify")

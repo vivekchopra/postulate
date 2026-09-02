@@ -25,6 +25,7 @@ ADRs are an append-only log of design choices. One decision per file. Never dele
 | [0016](0016-verify-command.md) | verify command for mapped-test existence | Accepted |
 | [0017](0017-git-aware-diff.md) | Git-aware spec diff | Accepted |
 | [0018](0018-pytest-plugin-exercised-mapping.md) | Pytest plugin for exercised spec mapping | Accepted |
+| [0019](0019-policy-pack-heuristics.md) | Policy pack heuristics (Python) | Accepted |
 
 ## Conventions
 

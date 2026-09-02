@@ -15,17 +15,13 @@ Phases 0-7 of the original v0.1 build are complete:
 - [x] known-invariant registry
 - [x] worked TypeScript example and repository CI
 - [x] test and schema hardening: [`plans/test-hardening/`](plans/test-hardening/)
-- [x] python adapter milestones A–B: [`plans/python-adapter/`](plans/python-adapter/)
+- [x] python adapter milestones A–C: [`plans/python-adapter/`](plans/python-adapter/)
 
 ## Current
 
-- [ ] Policy enforcement and init (Milestone C): [`plans/python-adapter/TASKS.md`](plans/python-adapter/TASKS.md)
-
-Python adapter Milestones A–B are complete. Acceptance: [`plans/python-adapter/ACCEPTANCE.md`](plans/python-adapter/ACCEPTANCE.md).
+Python adapter Milestones A–C are complete. Milestone D (webcheck-api consumer pilot) was skipped. Acceptance: [`plans/python-adapter/ACCEPTANCE.md`](plans/python-adapter/ACCEPTANCE.md).
 
 ## Planned
-
-After Milestone C:
 
 - [ ] property tests from named invariants
 - [ ] architectural drift detection
