@@ -93,20 +93,6 @@ node dist/index.js diff --git HEAD~1 examples/ts-late-fee/postulate.yaml   # whe
 
 ---
 
-## Milestone D acceptance (webcheck-api repo)
-
-In webcheck-api:
-
-```bash
-pip install postulate   # or path dep until PyPI
-postulate verify specs/safety/postulate.yaml --project-root .
-pytest --postulate-spec specs/safety/postulate.yaml
-```
-
-Existing `pytest` suite still passes. PR that removes a mapped invariant without updating the spec fails `postulate diff --git`.
-
----
-
 ## Parity regression gate (ongoing)
 
 CI must run both:
