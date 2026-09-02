@@ -2,6 +2,7 @@
 import { Command } from "commander";
 import pc from "picocolors";
 import { loadSpec, SpecLoadError } from "./loadSpec.js";
+import { GitDiffError, loadSpecsForGitDiff } from "./gitDiff.js";
 import { checkSpec, printCheckResult } from "./check.js";
 import { diffSpecs, printDiffResult } from "./diff.js";
 import { buildCodegenPrompt } from "./prompt.js";
@@ -67,13 +68,48 @@ program
 
 program
   .command("diff")
-  .argument("<before>", "Path to the previous spec file")
-  .argument("<after>", "Path to the current spec file")
+  .option(
+    "--git <ref>",
+    "Compare the spec at a git ref to the working tree version."
+  )
+  .argument("<before-or-spec>", "Before path, or spec path when using --git")
+  .argument("[after]", "After path when not using --git")
   .description(
     "Show regressions between two specs (dropped invariants, weakened risk, removed postconditions)."
   )
-  .action((beforePath: string, afterPath: string) => {
-    const before = safeLoad(beforePath);
+  .action((beforeOrSpec: string, afterPath: string | undefined, opts: { git?: string }) => {
+    if (opts.git) {
+      if (afterPath) {
+        console.error(
+          pc.red(
+            "Use either 'diff <before> <after>' or 'diff --git <ref> <spec-file>'."
+          )
+        );
+        process.exit(2);
+      }
+      let before: PostulateSpec;
+      let after: PostulateSpec;
+      try {
+        ({ before, after } = loadSpecsForGitDiff(opts.git, beforeOrSpec));
+      } catch (err) {
+        if (err instanceof SpecLoadError || err instanceof GitDiffError) {
+          console.error(pc.red(err.message));
+          process.exit(2);
+        }
+        throw err;
+      }
+      const result = diffSpecs(before, after);
+      const ok = printDiffResult(result);
+      if (!ok) process.exit(1);
+      return;
+    }
+
+    if (!afterPath) {
+      console.error(pc.red("diff requires two file paths unless --git is used."));
+      process.exit(2);
+    }
+
+    const before = safeLoad(beforeOrSpec);
     const after = safeLoad(afterPath);
     const result = diffSpecs(before, after);
     const ok = printDiffResult(result);

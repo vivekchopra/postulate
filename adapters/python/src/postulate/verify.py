@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from postulate.check import CheckResult, check_spec
+from postulate.mapping import _normalize_node_id, check_mapping_coverage
 from postulate.models import PostulateSpec
 
 NODE_ID_PATTERN = re.compile(r".+\.py::.+$")
@@ -17,16 +18,6 @@ class VerifyResult:
     check: CheckResult
     errors: list[str]
     warnings: list[str]
-
-
-def _normalize_node_id(node_id: str, project_root: Path) -> str:
-    normalized = node_id.replace("\\", "/")
-    root = str(project_root.resolve()).replace("\\", "/")
-    if normalized.startswith(root + "/"):
-        normalized = normalized[len(root) + 1 :]
-    if "/tests/" in normalized:
-        normalized = "tests/" + normalized.split("/tests/", 1)[1]
-    return normalized
 
 
 def collect_pytest_node_ids(
@@ -61,20 +52,6 @@ def collect_pytest_node_ids(
     return node_ids, completed.stdout
 
 
-def resolve_locator(locator: str, node_ids: set[str]) -> bool:
-    normalized = locator.replace("\\", "/")
-    if normalized in node_ids:
-        return True
-
-    for node_id in node_ids:
-        if node_id == normalized or node_id.endswith("/" + normalized):
-            return True
-        if "[" not in normalized and node_id.startswith(normalized + "["):
-            return True
-
-    return False
-
-
 def verify_spec(
     spec: PostulateSpec,
     project_root: Path,
@@ -88,20 +65,9 @@ def verify_spec(
         return VerifyResult(check=check, errors=errors, warnings=warnings)
 
     node_ids, _ = collect_pytest_node_ids(project_root, pytest_args)
-    invariant_names = set(spec.invariants)
-    bdd_names = {scenario.name for scenario in spec.bdd}
-
-    for key, locator in spec.test_mapping.items():
-        if not resolve_locator(locator, node_ids):
-            message = (
-                f"test_mapping '{key}' -> '{locator}' does not resolve to a collected pytest node"
-            )
-            if key in invariant_names:
-                errors.append(message)
-            elif key in bdd_names:
-                warnings.append(message)
-            else:
-                warnings.append(f"Unmapped spec key '{key}': {message}")
+    mapping_errors, mapping_warnings = check_mapping_coverage(spec, node_ids)
+    errors.extend(mapping_errors)
+    warnings.extend(mapping_warnings)
 
     return VerifyResult(check=check, errors=errors, warnings=warnings)
 

@@ -23,6 +23,9 @@ dev = [
 [project.scripts]
 postulate = "postulate.cli:app"
 
+[project.entry-points.pytest11]
+postulate_exercise = "postulate.pytest_plugin"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 

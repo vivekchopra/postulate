@@ -30,8 +30,9 @@ This is a very early version (v0.1). What ships today:
 - YAML spec schema with Zod-based validation and readable error messages.
 - A `check` command that enforces a small set of structural rules.
 - A `ci` command with an optional `--fail-on-warnings` flag.
-- A `diff` command that flags dropped invariants, removed postconditions, and weakened risk between two spec versions.
+- A `diff` command that flags dropped invariants, removed postconditions, and weakened risk between two spec versions (or against a git ref with `--git`).
 - A `prompt` command that builds an LLM codegen prompt from a spec.
+- A **Python adapter** (`adapters/python/`) with `check`, `ci`, `prompt`, `diff`, `verify`, and a pytest plugin (`--postulate-spec`).
 - A small registry of well-known invariants: `does_not_mutate_input`, `deterministic_output`, `pure`, `idempotent`, and friends.
 - A worked TypeScript example with a spec, an implementation, and tests covering every named invariant and failure case.
 
@@ -52,7 +53,7 @@ New design changes go in `docs/adr/` (copy `docs/adr/template.md`, take the next
 
 ## Install and try
 
-From source:
+From source (TypeScript CLI):
 
 ```bash
 npm install
@@ -71,6 +72,25 @@ postulate check ./postulate.yaml
 ```
 
 The package is published under the scoped name `@postulate/cli`. The CLI binary is `postulate`.
+
+## Python consumers
+
+Install from the adapter package (PyPI when published, or editable from this repo):
+
+```bash
+pip install -e "./adapters/python[dev]"
+```
+
+Typical workflow:
+
+```bash
+postulate check specs/safety/postulate.yaml
+postulate verify specs/safety/postulate.yaml --project-root .
+pytest --postulate-spec specs/safety/postulate.yaml
+postulate diff --git origin/main specs/safety/postulate.yaml
+```
+
+Use pytest node IDs in `test_mapping` (for example `tests/test_safety.py::test_normalize_domain`). See [`adapters/python/README.md`](adapters/python/README.md) for locator format and CI snippets.
 
 ## Influences
 
@@ -168,7 +188,7 @@ write spec → postulate check → postulate prompt → LLM writes code & tests 
 | Contract not too thin              | warning  | preconditions + postconditions ≥ 3                                         |
 | Recognised vs. custom invariants   | info     | Surfaces which invariants Postulate knows about and which are unrecognised.|
 
-`postulate diff <before> <after>` reports regressions (dropped invariants, removed postconditions, removed scenarios, removed policies, weakened risk) along with the inverse improvements.
+`postulate diff <before> <after>` reports regressions (dropped invariants, removed postconditions, removed scenarios, removed policies, weakened risk) along with the inverse improvements. Use `postulate diff --git <ref> <spec-file>` to compare a spec at a git revision to the working tree copy.
 
 ## What Postulate is not
 

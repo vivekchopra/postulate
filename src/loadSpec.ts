@@ -27,12 +27,16 @@ export function loadSpec(specPath: string): PostulateSpec {
     );
   }
 
+  return loadSpecFromContent(raw, specPath);
+}
+
+export function loadSpecFromContent(raw: string, source: string): PostulateSpec {
   let parsed: unknown;
   try {
     parsed = YAML.parse(raw);
   } catch (err) {
     throw new SpecLoadError(
-      `Invalid YAML in ${specPath}: ${(err as Error).message}`
+      `Invalid YAML in ${source}: ${(err as Error).message}`
     );
   }
 
@@ -47,7 +51,7 @@ export function loadSpec(specPath: string): PostulateSpec {
         })
         .join("\n");
       throw new SpecLoadError(
-        `Spec ${specPath} failed schema validation:\n${issues}`
+        `Spec ${source} failed schema validation:\n${issues}`
       );
     }
     throw err;

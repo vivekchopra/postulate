@@ -36,3 +36,5 @@ jobs:
         run: |
           postulate check postulate.yaml
           postulate verify postulate.yaml --project-root .
+          pytest --postulate-spec postulate.yaml
+          pytest --postulate-spec postulate.yaml

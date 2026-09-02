@@ -8,6 +8,7 @@ import typer
 
 from postulate.check import check_spec, print_check_result
 from postulate.diff import diff_specs, print_diff_result
+from postulate.git_diff import GitDiffError, diff_specs_against_git_ref
 from postulate.load_spec import SpecLoadError, load_spec
 from postulate.prompt import build_codegen_prompt
 from postulate.verify import print_verify_result, verify_spec
@@ -68,10 +69,42 @@ def ci_command(
 
 
 @app.command("diff")
-def diff_command(before: Path, after: Path) -> None:
-    """Show regressions between two specs."""
-    before_spec = _safe_load(before)
-    after_spec = _safe_load(after)
+def diff_command(
+    first: Path,
+    second: Optional[Path] = typer.Argument(None),
+    git_ref: Optional[str] = typer.Option(
+        None,
+        "--git",
+        help="Compare spec at git ref to the working tree file.",
+    ),
+) -> None:
+    """Show regressions between two specs, or against a git ref."""
+    if git_ref is not None:
+        if second is not None:
+            typer.secho(
+                "Use either 'diff <before> <after>' or 'diff --git <ref> <spec-file>'.",
+                fg=typer.colors.RED,
+                err=True,
+            )
+            raise typer.Exit(code=2)
+        try:
+            before_spec, after_spec = diff_specs_against_git_ref(git_ref, first)
+        except SpecLoadError as err:
+            _exit_load_error(err)
+        except GitDiffError as err:
+            typer.secho(str(err), fg=typer.colors.RED, err=True)
+            raise typer.Exit(code=2) from err
+    else:
+        if second is None:
+            typer.secho(
+                "diff requires two file paths or --git <ref> <spec-file>.",
+                fg=typer.colors.RED,
+                err=True,
+            )
+            raise typer.Exit(code=2)
+        before_spec = _safe_load(first)
+        after_spec = _safe_load(second)
+
     result = diff_specs(before_spec, after_spec)
     ok = print_diff_result(result)
     if not ok:

@@ -12,8 +12,8 @@ It does not call an LLM, execute contract expressions, run mapped tests, enforce
 
 | Surface | Location | Commands |
 | --- | --- | --- |
-| TypeScript CLI (reference) | `src/` | `check`, `prompt`, `ci`, `diff` |
-| Python adapter (PyPI `postulate`) | `adapters/python/` | `check`, `prompt`, `ci`, `diff`, **`verify`** |
+| TypeScript CLI (reference) | `src/` | `check`, `prompt`, `ci`, `diff`, `diff --git` |
+| Python adapter (PyPI `postulate`) | `adapters/python/` | `check`, `prompt`, `ci`, `diff`, `diff --git`, **`verify`**, pytest plugin |
 
 Both implementations share the same YAML contract ([`docs/SPEC.md`](SPEC.md)). Parity tests use fixtures under `adapters/fixtures/specs/`.
 
@@ -73,6 +73,10 @@ Both implementations share the same YAML contract ([`docs/SPEC.md`](SPEC.md)). P
 ### `adapters/python/src/postulate/cli.py`
 
 CLI entry with the same exit semantics as TypeScript for shared commands. `verify` exits `2` on load or pytest collection failure.
+
+### `adapters/python/src/postulate/pytest_plugin.py`
+
+After a pytest session, compares exercised node IDs to `test_mapping` when `--postulate-spec` is set ([ADR 0018](adr/0018-pytest-plugin-exercised-mapping.md)).
 
 ### `adapters/python/src/postulate/verify.py`
 

@@ -59,28 +59,28 @@ See [`CURSOR_PROMPTS.md`](CURSOR_PROMPTS.md) § Milestone A.
 
 ### B1. Git-aware diff (Python)
 
-- [ ] `postulate diff --git <ref> <spec-file>`
-- [ ] `git show <ref>:<path>` for before; load working tree file for after
-- [ ] Clear errors: not a git repo, ref missing, spec absent at ref
-- [ ] Tests: temporary git fixture repo
+- [x] `postulate diff --git <ref> <spec-file>`
+- [x] `git show <ref>:<path>` for before; load working tree file for after
+- [x] Clear errors: not a git repo, ref missing, spec absent at ref
+- [x] Tests: temporary git fixture repo
 
 ### B2. Git-aware diff (TypeScript)
 
-- [ ] Same `--git` flag on TS `postulate diff`
-- [ ] Tests in `tests/diff.test.ts` or `tests/cli.test.ts`
-- [ ] Parity with Python behavior on shared fixtures
+- [x] Same `--git` flag on TS `postulate diff`
+- [x] Tests in `tests/diff.test.ts` or `tests/cli.test.ts`
+- [x] Parity with Python behavior on shared fixtures
 
 ### B3. pytest plugin
 
-- [ ] Entry point `postulate.pytest_plugin`
-- [ ] `--postulate-spec` and `--postulate-fail-on-warning`
-- [ ] Compare session's ran node IDs to `test_mapping`
-- [ ] Tests: plugin unit tests with pytester's `pytester` fixture
+- [x] Entry point `postulate.pytest_plugin`
+- [x] `--postulate-spec` and `--postulate-fail-on-warning`
+- [x] Compare session's ran node IDs to `test_mapping`
+- [x] Tests: plugin unit tests with pytester's `pytester` fixture
 
 ### B4. Consumer docs
 
-- [ ] Document CI snippet in `adapters/python/README.md`
-- [ ] Add "Python consumers" section to root `README.md`
+- [x] Document CI snippet in `adapters/python/README.md`
+- [x] Add "Python consumers" section to root `README.md`
 
 ### Cursor prompt
 
@@ -137,6 +137,6 @@ Tracked here for sequencing; implemented in **webcheck-api**, not postulate.
 | Milestone | Status |
 | --- | --- |
 | A — Python CLI + verify | **Complete** (PyPI workflow pending) |
-| B — Git diff + pytest plugin | **Next** |
+| B — Git diff + pytest plugin | **Complete** |
 | C — Policies + init | Planned |
 | D — webcheck pilot | Planned (consumer repo) |

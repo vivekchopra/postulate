@@ -9,7 +9,8 @@ from postulate.diff import diff_specs
 from postulate.load_spec import SpecLoadError, load_spec
 from postulate.models import Contract, PostulateSpec, Scenario
 from postulate.prompt import build_codegen_prompt
-from postulate.verify import collect_pytest_node_ids, resolve_locator, verify_spec
+from postulate.mapping import resolve_locator
+from postulate.verify import collect_pytest_node_ids, verify_spec
 
 FIXTURES = Path(__file__).resolve().parents[2] / "fixtures" / "specs"
 MINIMAL_EXAMPLE = (

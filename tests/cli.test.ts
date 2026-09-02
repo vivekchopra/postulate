@@ -3,7 +3,6 @@ import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { afterEach, describe, expect, it } from "vitest";
-
 const tempDirs: string[] = [];
 const cliPath = path.resolve("src/index.ts");
 
@@ -145,5 +144,66 @@ test_mapping:
     const result = runCli("diff", before, after);
 
     expect(result.status).toBe(1);
+  });
+
+  it("returns 1 when diff --git finds a regression", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "postulate-git-"));
+    tempDirs.push(dir);
+
+    const specV1 = `
+feature: example
+risk: medium
+contract:
+  preconditions:
+    - input exists
+    - input is valid
+  postconditions:
+    - output exists
+invariants:
+  - deterministic_output
+bdd:
+  - name: example_scenario
+    then:
+      result: true
+test_mapping:
+  deterministic_output: example.test.ts > deterministic_output
+  example_scenario: example.test.ts > example_scenario
+`;
+
+    const specV2 = `
+feature: example
+risk: medium
+contract:
+  preconditions:
+    - input exists
+    - input is valid
+  postconditions:
+    - output exists
+invariants: []
+bdd:
+  - name: example_scenario
+    then:
+      result: true
+test_mapping:
+  example_scenario: example.test.ts > example_scenario
+`;
+
+    const specPath = path.join(dir, "postulate.yaml");
+    fs.writeFileSync(specPath, specV1, "utf8");
+
+    const git = (...args: string[]) =>
+      spawnSync("git", args, { cwd: dir, encoding: "utf8" });
+
+    git("init");
+    git("config", "user.email", "test@example.com");
+    git("config", "user.name", "Test");
+    git("add", ".");
+    git("commit", "-m", "initial");
+
+    fs.writeFileSync(specPath, specV2, "utf8");
+
+    const result = runCli("diff", "--git", "HEAD", specPath);
+    expect(result.status).toBe(1);
+    expect(result.stdout).toContain("deterministic_output");
   });
 });
