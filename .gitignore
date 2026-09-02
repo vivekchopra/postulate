@@ -1,10 +1,57 @@
-node_modules
-dist
-.env
+# OS
 .DS_Store
-coverage
+
+# Environment / secrets
+.env
+
+# --- Node / TypeScript ---
+node_modules/
+dist/
 *.tsbuildinfo
-.venv
+coverage/
+
+# --- Python ---
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+sdist/
+var/
+wheels/
+share/python-wheels/
 *.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.hypothesis/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# --- Ruby ---
+.bundle/
+vendor/bundle/
+*.gem
+tmp/
+log/
+
+# --- Rust ---
+target/
