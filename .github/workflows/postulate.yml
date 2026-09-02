@@ -37,4 +37,8 @@ jobs:
           postulate check postulate.yaml
           postulate verify postulate.yaml --project-root .
           pytest --postulate-spec postulate.yaml
+      - name: Verify safety-offline example
+        working-directory: adapters/python/examples/safety-offline
+        run: |
+          postulate verify postulate.yaml --project-root .
           pytest --postulate-spec postulate.yaml

@@ -86,7 +86,7 @@ def test_plugin_fails_when_invariant_not_exercised(pytester):
     result = pytester.runpytest("--postulate-spec", "postulate.yaml")
     result.assert_outcomes(passed=1)
     assert result.ret == 1
-    assert "was not exercised" in result.stdout.str()
+    assert "no mapped test ran" in result.stdout.str()
     assert "does_not_mutate_input" in result.stdout.str()
 
 

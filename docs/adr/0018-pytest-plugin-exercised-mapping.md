@@ -1,10 +1,10 @@
 # 0018. Pytest plugin for exercised spec mapping
 
-- Status: Accepted
+- Status: Superseded
 - Date: 2026-08-31
 - Deciders: postulate
 - Supersedes: (none)
-- Superseded by: (none)
+- Superseded by: [0020](0020-pytest-execution-coverage.md) (skip and execution semantics)
 
 ## Context
 

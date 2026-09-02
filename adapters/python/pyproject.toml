@@ -33,5 +33,5 @@ where = ["src"]
 testpaths = ["tests"]
 pythonpath = ["src"]
 markers = [
-    "p0_regression: P0 pytest coverage regressions; expected to fail until P1/P2",
+    "g0_regression: G0 git diff regressions; expected to fail until G1/G2",
 ]
