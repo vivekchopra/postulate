@@ -2,7 +2,7 @@
 
 ## Goal
 
-Make Postulate usable in Python codebases (first consumer: **webcheck-api**) without Node.js, and close the gap between `test_mapping` and pytest.
+Make Postulate usable in Python codebases without Node.js, and close the gap between `test_mapping` and pytest.
 
 After this change, a Python project can:
 
@@ -17,7 +17,6 @@ postulate diff --git origin/master specs/safety/postulate.yaml
 ## Why now
 
 - Test/schema hardening for the TypeScript CLI is complete.
-- webcheck-api has extensive pytest coverage and ADRs (offline tests, no secrets) but no contract layer tying specs to tests.
 - Without pytest integration, Postulate remains a YAML linter for Python repos.
 
 ## Milestones
@@ -27,7 +26,6 @@ postulate diff --git origin/master specs/safety/postulate.yaml
 | **A — Python CLI + verify** | PyPI package, CLI parity, pytest collection resolves `test_mapping` | [0014](../adr/0014-python-adapter-package.md), [0015](../adr/0015-pytest-test-mapping-locator.md), [0016](../adr/0016-verify-command.md) |
 | **B — Exercise + git diff** | pytest plugin for mapped tests that ran; `diff --git` | [0017](../adr/0017-git-aware-diff.md), [0018](../adr/0018-pytest-plugin-exercised-mapping.md) |
 | **C — Policies + scaffolding** | Optional policy pack; `postulate init` | (policy ADR when implementing) |
-| **D — webcheck pilot** | One real spec in webcheck-api CI | consumer repo change |
 
 Implement milestones in order. Do not start B until A acceptance passes.
 
@@ -40,7 +38,7 @@ Implement milestones in order. Do not start B until A acceptance passes.
 - Pytest node ID collection and mapping resolution
 - Parity tests against shared YAML fixtures (structural check, diff, prompt sections)
 - PyPI-publishable `pyproject.toml`
-- Example spec under `adapters/python/examples/` (minimal; not webcheck-sized)
+- Example spec under `adapters/python/examples/` (minimal)
 
 ### Milestone B
 
@@ -54,17 +52,10 @@ Implement milestones in order. Do not start B until A acceptance passes.
 - Policy pack v1: `unit_tests_stay_offline`, `no_secrets_in_output` (Python AST/grep rules)
 - `postulate ci --enforce-policies` or `postulate policies check`
 
-### Milestone D (webcheck-api repo)
-
-- Add `specs/safety/postulate.yaml` (pilot)
-- Wire `postulate verify` + `pytest --postulate-spec` in webcheck CI
-- Second spec: `specs/free_scans/postulate.yaml` (optional stretch)
-
 ## Explicitly out of scope (all milestones unless a new ADR says otherwise)
 
 - Changing the YAML schema fields or check severity table in `docs/SPEC.md`
 - Theorem proving, model checking, or evaluating contract predicate strings
-- Mapping webcheck scanner `CHECKS.md` IDs into Postulate specs
 - Property-test generation from named invariants (separate roadmap item)
 - Architectural drift detection
 - OPA/Rego policy engine
@@ -95,7 +86,7 @@ Implement milestones in order. Do not start B until A acceptance passes.
 TypeScript CLI (src/) remains reference; shared fixture corpus keeps behavior aligned.
 ```
 
-## Consumer spec layout (webcheck-api)
+## Consumer spec layout 
 
 Postulate specs belong at **module/API boundaries**, not per scanner check:
 
@@ -122,8 +113,6 @@ docs/ROADMAP.md                             # cross-link
 src/diff.ts                                 # Milestone B: --git
 tests/diff.test.ts                          # Milestone B
 ```
-
-webcheck-api changes are Milestone D in that repository.
 
 ## Parity strategy
 
