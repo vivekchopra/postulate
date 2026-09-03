@@ -47,7 +47,7 @@ The pytest entry point is `postulate_exercise = postulate.pytest_plugin` (pytest
 
 Invariant gaps are errors; BDD-only gaps are warnings unless `--postulate-fail-on-warning` is set. Unknown `test_mapping` keys always warn. Locators are exact root-relative pytest node IDs shared with `verify` ([ADR 0020](adr/0020-pytest-execution-coverage.md)).
 
-`diff --git` obtains the repository root from the supplied spec location, reads `ref:path` with local Git, loads the current working file, then calls the same comparator as two-file diff. It does not fetch or check out files.
+`diff --git` discovers the Git worktree from the **invocation cwd** (not from the directory of an absolute path alone). It resolves one commit with `git rev-parse --verify --end-of-options <ref>^{commit}`, reads that blob at the same repository-relative path as the working file, then calls the same comparator as two-file diff. The working path must be a regular file inside the discovered repository; symlinked specs and paths outside the repo are rejected (exit 2). Missing Git, bad refs, and absent historical/working files are exit 2. The command does not fetch, check out, or mutate repository state ([ADR 0021](adr/0021-git-diff-input-boundary.md)).
 
 `policies check` applies Python heuristics for `unit_tests_stay_offline` and `no_secrets_in_output`. `init` creates a skeleton spec and can suggest mappings from pytest collection.
 
@@ -55,4 +55,4 @@ Invariant gaps are errors; BDD-only gaps are warnings unless `--postulate-fail-o
 
 TypeScript tests live in `tests/` and `examples/ts-late-fee/`. Python tests live in `adapters/python/tests/`; consumers in `adapters/python/examples/minimal-pytest/` and `adapters/python/examples/safety-offline/`. Shared spec fixtures live in `adapters/fixtures/specs/`. CI runs Node and Python jobs.
 
-Further work is indexed in [Python project testing](plans/python-project-testing.md). Git diff hardening is planned separately under `docs/plans/git-diff-hardening/`.
+Further work is indexed in [Python project testing](plans/python-project-testing.md). Git-aware diff input boundaries are documented in [ADR 0021](adr/0021-git-diff-input-boundary.md); plan notes live under `docs/plans/git-diff-hardening/`.

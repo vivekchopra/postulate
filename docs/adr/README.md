@@ -27,7 +27,7 @@ ADRs are an append-only log of design choices. One decision per file. Never dele
 | [0018](0018-pytest-plugin-exercised-mapping.md) | Pytest plugin for exercised spec mapping | Superseded by [0020](0020-pytest-execution-coverage.md) |
 | [0019](0019-policy-pack-heuristics.md) | Policy pack heuristics (Python) | Accepted |
 | [0020](0020-pytest-execution-coverage.md) | Measure execution of every declared pytest claim | Accepted |
-| [0021](0021-git-diff-input-boundary.md) | Git diff input boundary and PR baseline | Proposed |
+| [0021](0021-git-diff-input-boundary.md) | Git diff input boundary and PR baseline | Accepted |
 
 ## Conventions
 

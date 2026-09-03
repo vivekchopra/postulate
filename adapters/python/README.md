@@ -91,12 +91,22 @@ Behavior is defined in [ADR 0020](../../docs/adr/0020-pytest-execution-coverage.
 - run: pytest --postulate-spec specs/safety/postulate.yaml
 ```
 
-For PRs that change specs, compare against the base branch:
+For PRs that change specs (or code/tests that should stay aligned with the spec), compare against a local base revision. Prefer a merge-base for multi-commit branches:
 
 ```bash
-postulate diff --git origin/main specs/safety/postulate.yaml
+set -e
+# Previous commit only:
+# postulate diff --git HEAD~1 specs/safety/postulate.yaml
+#
+# Target tip (must already be available locally; no implicit fetch):
+# postulate diff --git origin/main specs/safety/postulate.yaml
+#
+# Full branch change vs target:
+base_sha=$(git merge-base HEAD origin/main)
+postulate diff --git "$base_sha" specs/safety/postulate.yaml
 ```
 
+Do not wrap the check in `|| true`. Missing history, a new/renamed path with no blob at the base, or a deleted working spec exits 2 for review. Invoke from the consumer repo; symlinked specs are rejected.
 ## Examples
 
 ### Minimal pytest consumer

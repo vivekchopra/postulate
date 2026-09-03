@@ -106,6 +106,107 @@ Full Python adapter suite (including pytest-coverage work): **76 passed** when r
 
 G1 should normalize Python spawn failures. G2 should match Python load order and boundary handling, including working-file reads before/alongside path canonicalization per ADR 0021.
 
+---
+
+## G1: Harden Python Git loading
+
+**Date:** 2026-09-03  
+**Branch:** `cursor/pytest-coverage-p0-baseline`  
+**Scope:** Python `git_diff.py` + `tests/test_git_diff.py` only (no TypeScript production changes).
+
+### Key changes
+
+| Behavior | Implementation |
+| --- | --- |
+| Discover repo from invocation cwd | `find_git_root(cwd)` via `rev-parse --show-toplevel` |
+| Validate working file | Reject symlinks; require regular file; containment via `Path.relative_to` (allows `..spec.yaml`) |
+| Resolve commit once | `rev-parse --verify --end-of-options <ref>^{commit}` then `cat-file -e` + `show` |
+| Missing Git on PATH | `FileNotFoundError` → `GitDiffError("Git executable not found on PATH")` → CLI exit **2** |
+| No English stderr matching | Classify by operation return codes / exceptions |
+
+Deleted `test_git_diff_regressions.py` (cases absorbed into `test_git_diff.py`). Removed unused `g0_regression` pytest marker.
+
+### Commands and results
+
+```bash
+cd adapters/python
+.venv-p0/bin/pytest tests/test_git_diff.py -q
+.venv-p0/bin/pytest tests/ -q
+```
+
+| Suite | Result |
+| --- | --- |
+| `tests/test_git_diff.py` | **20 passed** |
+| Full adapter `tests/` | **88 passed** |
+
 ### Next group
 
-**G1:** Harden Python Git loading (`git_diff.py`, `cli.py`).
+**G2:** TypeScript parity (`src/gitDiff.ts`).
+
+---
+
+## G2: Match TypeScript behavior
+
+**Date:** 2026-09-03  
+**Scope:** `src/gitDiff.ts`, `tests/gitDiff.test.ts`, `tests/cli.test.ts` (cwd-aware CLI harness).
+
+### Key changes
+
+Mirrored Python boundaries: cwd discovery, symlink rejection, path-component containment (allows `..spec.yaml`), `rev-parse --verify --end-of-options <ref>^{commit}`, `cat-file -e` + `show`, spawn `ENOENT` → “Git executable not found on PATH”, no English stderr classification.
+
+CLI tests must spawn with fixture `cwd` and an absolute `--import` path to `tsx` so Node resolves the loader outside the consumer repo.
+
+Deleted `tests/gitDiff.baseline.test.ts` (absorbed into `tests/gitDiff.test.ts`).
+
+### Commands and results
+
+```bash
+npm test -- tests/gitDiff.test.ts tests/cli.test.ts tests/diff.test.ts
+```
+
+| Suite | Result |
+| --- | --- |
+| `tests/gitDiff.test.ts` | **20 passed** |
+| `tests/cli.test.ts` | **8 passed** |
+
+---
+
+## G3: Document and finish
+
+**Date:** 2026-09-03
+
+### Documentation
+
+- Accepted [ADR 0021](../../adr/0021-git-diff-input-boundary.md); ADR index updated; [0017](../../adr/0017-git-aware-diff.md) marked refined by 0021.
+- Root README and `adapters/python/README.md`: previous-commit / target-tip / merge-base recipes; no `|| true`; new/renamed/deleted path → exit 2; no implicit fetch.
+- `docs/ARCHITECTURE.md`: cwd discovery and boundary behavior.
+- Plan/SPEC status → Implemented.
+
+### Final gates
+
+```bash
+cd adapters/python && .venv-p0/bin/pytest tests/ -q
+npm test
+npm run build
+```
+
+| Gate | Result |
+| --- | --- |
+| Python adapter tests | **88 passed** |
+| `npm test` | **66 passed** (8 files) |
+| `npm run build` | **Success** |
+
+### Environment (final)
+
+| Component | Version |
+| --- | --- |
+| Python (adapter venv `.venv-p0`) | 3.11.14 |
+| Node | v24.14.1 |
+| Git | 2.50.1 (Apple Git-155) |
+| vitest | 2.1.9 |
+
+### Unresolved / out of scope
+
+- Rename detection, automatic merge-base inside Postulate, remote fetch.
+- Linked Git worktree exercised only insofar as `rev-parse --show-toplevel` supports it (no dedicated multi-worktree fixture).
+- Non-English Git locale: classification no longer depends on English stderr substrings.

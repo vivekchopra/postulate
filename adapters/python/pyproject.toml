@@ -32,6 +32,3 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
-markers = [
-    "g0_regression: G0 git diff regressions; expected to fail until G1/G2",
-]
