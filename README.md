@@ -87,8 +87,26 @@ Typical workflow:
 postulate check specs/safety/postulate.yaml
 postulate verify specs/safety/postulate.yaml --project-root .
 pytest --postulate-spec specs/safety/postulate.yaml
-postulate diff --git origin/main specs/safety/postulate.yaml
 ```
+
+### Spec regression checks (`diff --git`)
+
+Run from the consumer repository. Postulate does not fetch, check out, or compute a merge-base itself—supply the revision you intend.
+
+```bash
+# Previous commit only (final commit on the branch tip)
+postulate diff --git HEAD~1 specs/safety/postulate.yaml
+
+# Target branch tip (requires that tip available locally)
+postulate diff --git origin/main specs/safety/postulate.yaml
+
+# Full PR / branch change vs target (preferred for multi-commit PRs)
+set -e
+base_sha=$(git merge-base HEAD origin/main)
+postulate diff --git "$base_sha" specs/safety/postulate.yaml
+```
+
+If merge-base fails (shallow clone / missing history), fail the job—do not suppress with `|| true`. A new, renamed, or deleted spec at the same path exits **2** (not a silent pass); review those cases explicitly or use two-file mode with a prepared prior file. Symlinked specs and paths outside the invocation cwd's repository are rejected.
 
 Use pytest node IDs in `test_mapping` (for example `tests/test_safety.py::test_normalize_domain`). See [`adapters/python/README.md`](adapters/python/README.md) for locator format and CI snippets.
 
@@ -188,7 +206,7 @@ write spec → postulate check → postulate prompt → LLM writes code & tests 
 | Contract not too thin              | warning  | preconditions + postconditions ≥ 3                                         |
 | Recognised vs. custom invariants   | info     | Surfaces which invariants Postulate knows about and which are unrecognised.|
 
-`postulate diff <before> <after>` reports regressions (dropped invariants, removed postconditions, removed scenarios, removed policies, weakened risk) along with the inverse improvements. Use `postulate diff --git <ref> <spec-file>` to compare a spec at a git revision to the working tree copy.
+`postulate diff <before> <after>` reports regressions (dropped invariants, removed postconditions, removed scenarios, removed policies, weakened risk) along with the inverse improvements. Use `postulate diff --git <ref> <spec-file>` to compare a spec at a git revision to the working tree copy (same path; repository discovered from cwd; see [ADR 0021](docs/adr/0021-git-diff-input-boundary.md)).
 
 ## What Postulate is not
 

@@ -5,6 +5,7 @@
 - Deciders: postulate
 - Supersedes: (none)
 - Superseded by: (none)
+- Refined by: [0021](0021-git-diff-input-boundary.md)
 
 ## Context
 

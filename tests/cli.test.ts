@@ -1,10 +1,12 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { createRequire } from "node:module";
 import { spawnSync } from "node:child_process";
 import { afterEach, describe, expect, it } from "vitest";
 const tempDirs: string[] = [];
 const cliPath = path.resolve("src/index.ts");
+const tsxLoader = createRequire(import.meta.url).resolve("tsx");
 
 function writeTempSpec(contents: string, name = "postulate.yaml"): string {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "postulate-cli-"));
@@ -15,8 +17,16 @@ function writeTempSpec(contents: string, name = "postulate.yaml"): string {
 }
 
 function runCli(...args: string[]) {
-  return spawnSync(process.execPath, ["--import", "tsx", cliPath, ...args], {
+  return spawnSync(process.execPath, ["--import", tsxLoader, cliPath, ...args], {
     cwd: process.cwd(),
+    encoding: "utf8",
+    env: { ...process.env, NO_COLOR: "1" }
+  });
+}
+
+function runCliIn(cwd: string, ...args: string[]) {
+  return spawnSync(process.execPath, ["--import", tsxLoader, cliPath, ...args], {
+    cwd,
     encoding: "utf8",
     env: { ...process.env, NO_COLOR: "1" }
   });
@@ -202,7 +212,7 @@ test_mapping:
 
     fs.writeFileSync(specPath, specV2, "utf8");
 
-    const result = runCli("diff", "--git", "HEAD", specPath);
+    const result = runCliIn(dir, "diff", "--git", "HEAD", "postulate.yaml");
     expect(result.status).toBe(1);
     expect(result.stdout).toContain("deterministic_output");
   });

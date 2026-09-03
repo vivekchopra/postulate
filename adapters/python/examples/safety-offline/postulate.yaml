@@ -1,0 +1,25 @@
+feature: safety_offline
+risk: medium
+contract:
+  preconditions:
+    - output is sanitized before assertion
+    - tests run offline without network fixtures
+    - inputs use synthetic tokens only
+  postconditions:
+    - no raw secret material appears in assertions
+  failure_cases: []
+invariants:
+  - no_secrets_in_output
+bdd:
+  - name: offline_request_blocked
+    given:
+      endpoint: https://example.invalid
+    when:
+      action: request
+    then:
+      blocked: true
+policies:
+  - no_secrets_in_output
+test_mapping:
+  no_secrets_in_output: tests/test_safety.py::test_no_secrets_in_output
+  offline_request_blocked: tests/test_safety.py::test_offline_request_blocked

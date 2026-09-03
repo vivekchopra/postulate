@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from postulate.check import CheckResult, check_spec
-from postulate.mapping import _normalize_node_id, check_mapping_coverage
+from postulate.mapping import check_mapping_coverage, normalize_node_id
 from postulate.models import PostulateSpec
 
 NODE_ID_PATTERN = re.compile(r".+\.py::.+$")
@@ -25,7 +25,14 @@ def collect_pytest_node_ids(
     pytest_args: list[str] | None = None,
 ) -> tuple[set[str], str]:
     project_root = project_root.resolve()
-    command = [sys.executable, "-m", "pytest", "--collect-only", "-q"]
+    command = [
+        sys.executable,
+        "-m",
+        "pytest",
+        "--collect-only",
+        "-q",
+        f"--rootdir={project_root}",
+    ]
     if (project_root / "tests").is_dir():
         command.append("tests")
     if pytest_args:
@@ -48,7 +55,7 @@ def collect_pytest_node_ids(
     for line in completed.stdout.splitlines():
         candidate = line.strip()
         if NODE_ID_PATTERN.match(candidate):
-            node_ids.add(_normalize_node_id(candidate, project_root))
+            node_ids.add(normalize_node_id(candidate, project_root))
     return node_ids, completed.stdout
 
 
@@ -65,7 +72,11 @@ def verify_spec(
         return VerifyResult(check=check, errors=errors, warnings=warnings)
 
     node_ids, _ = collect_pytest_node_ids(project_root, pytest_args)
-    mapping_errors, mapping_warnings = check_mapping_coverage(spec, node_ids)
+    mapping_errors, mapping_warnings = check_mapping_coverage(
+        spec,
+        node_ids,
+        include_missing_claims=False,
+    )
     errors.extend(mapping_errors)
     warnings.extend(mapping_warnings)
 
